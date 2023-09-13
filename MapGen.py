@@ -50,7 +50,6 @@ g_StarIdMap = {}
 g_SystemIdMap = {}
 
 
-
 def mkdir_p(path):
     try:
         os.makedirs(path)
