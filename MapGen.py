@@ -48,6 +48,7 @@ g_Stars = []
 g_Planets = []
 g_StarIdMap = {}
 g_SystemIdMap = {}
+g_PlanetCsv = []
 
 
 def mkdir_p(path):
@@ -646,6 +647,8 @@ def CreateSystemMaps(sqlFilename):
 
 
 def CreatePlanetSql(worldId, planet):
+    global g_PlanetCsv
+    
     sql = ""
 
     if (not 'outputX' in planet):
@@ -700,6 +703,8 @@ def CreatePlanetSql(worldId, planet):
         valueStr += "'" + str(value) + "'"
 
     sql = "INSERT INTO location({0}) VALUES({1});\n".format(colStr, valueStr)
+
+    g_PlanetCsv.append("\"{0}\",{1}".format(planet['Name'], worldId))
     
     return sql
 
@@ -711,6 +716,26 @@ def CreatePlanetGroupSql(mapId, planetGroup):
         sql += CreatePlanetSql(mapId, planet)
         
     return sql
+
+
+def OutputWorldIdCsv(filename):
+    f = open(filename, "wb")
+
+    for name in g_SystemIdMap:
+        f.write("\"{0}\",{1}\n".format(name, g_SystemIdMap[name]))
+
+    f.close()
+    return
+
+
+def OutputPlanetCsv(filename):
+    global g_PlanetCsv
+    f = open(filename, "wb")
+
+    f.write("\n".join(g_PlanetCsv))
+
+    f.close()
+    return
 
 
 def CreateSystemDB(filename):
@@ -738,3 +763,5 @@ CreateGalaxyMapDB("galaxy", OUTPUT_PATH + "/galaxy.sql")
 
 CreateSystemMaps(OUTPUT_PATH + "/system.sql")
 
+OutputWorldIdCsv(OUTPUT_PATH + "/worlds.csv")
+OutputPlanetCsv(OUTPUT_PATH + "/planets.csv")
